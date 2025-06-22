@@ -1,8 +1,9 @@
 Attribute VB_Name = "Module1"
 Option Explicit
 
+' Block size (X x Y cells)
 Const blockLength = 20
-Const blockHeight = 10
+Const blockHeight = 50
 Const initTemp = 25
 Const fluidTemp = 200
 Const totalSteps = 100
@@ -13,10 +14,11 @@ Dim holeY() As Integer
 Sub InitializeBlock()
     Dim i As Integer, j As Integer
     ReDim holeY(1 To 3)
-    holeY(1) = 3
-    holeY(2) = 5
-    holeY(3) = 7
+    holeY(1) = 10
+    holeY(2) = 25
+    holeY(3) = 40
 
+    ' Set initial temperature
     For i = 1 To blockLength
         For j = 1 To blockHeight
             temperature(i, j) = initTemp
@@ -24,7 +26,7 @@ Sub InitializeBlock()
         Next j
     Next i
 
-    ' Draw holes
+    ' Set holes with fluid temp
     For i = 1 To blockLength
         For j = 1 To UBound(holeY)
             temperature(i, holeY(j)) = fluidTemp
@@ -38,7 +40,7 @@ Sub SimulateHeatTransfer()
     Dim stepNum As Integer
     Dim i As Integer, j As Integer
     Dim tempNew(blockLength, blockHeight) As Double
-    Dim k As Double: k = 0.1 ' Diffusivity placeholder
+    Dim k As Double: k = 0.15 ' Thermal diffusivity constant
 
     For stepNum = 1 To totalSteps
         For i = 2 To blockLength - 1
@@ -62,7 +64,7 @@ Sub SimulateHeatTransfer()
 
         ApplyColorMap
         DoEvents
-        Application.Wait (Now + TimeValue("0:00:01"))
+       ' Application.Wait (Now + TimeValue("0:00:01"))
     Next stepNum
 End Sub
 
@@ -86,7 +88,8 @@ Sub ApplyColorMap()
         For j = 1 To blockHeight
             temp = temperature(i, j)
             colorValue = TemperatureToColor(temp)
-            With Cells(j + 1, i + 1).Interior
+          '  With Cells(j + 1, i + 1).Interior
+          With Cells(j + 3, i + 3).Interior
                 .Color = colorValue
             End With
         Next j
@@ -98,7 +101,7 @@ Function TemperatureToColor(temp As Double) As Long
     Dim ratio As Double
     ratio = (temp - initTemp) / (fluidTemp - initTemp)
     'If ratio > 1 Then ratio = 1
-    If ratio > 1 Then ratio = 5
+    If ratio > 1 Then ratio = 10
     If ratio < 0 Then ratio = 0
 
     r = 255 * ratio
